@@ -77,6 +77,11 @@ Network network;
 MQTTPacket_connectData connect_data = MQTTPacket_connectData_initializer;
 
 uint8_t sendbuff[256],receivebuff[256];
+
+char* favoriotClientId = "";
+char* favoriotUsername = "";
+char* favoriotPassword = "";
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -189,10 +194,6 @@ int main(void)
   printf("Gateway     : %d.%d.%d.%d\n\r",netInfo.gw[0],netInfo.gw[1],netInfo.gw[2],netInfo.gw[3]);
   printf("DNS Server  : %d.%d.%d.%d\n\r",netInfo.dns[0],netInfo.dns[1],netInfo.dns[2],netInfo.dns[3]);
 
-  char* favoriotClientId = "";
-  char* favoriotUsername = "";
-  char* favoriotPassword = "";
-
   connect_data.willFlag = 0;
   connect_data.MQTTVersion = 3;
   connect_data.clientID.cstring = favoriotClientId;
@@ -227,12 +228,12 @@ int main(void)
 
   //Subscribe to temperature sensor
 
-  char mqtTopic[255];
-  sprintf(mqtTopic, "%s/v2/streams/status", favoriotUsername);
+  char mqttTopic[255];
+  sprintf(mqttTopic, "%s/v2/streams/status", favoriotUsername);
 
 
-  MQTTSubscribe(&mqtt_client, mqtTopic, QOS0, OnMessageReceived);
-  printf(strcat("Subscribed to", mqtTopic));
+  MQTTSubscribe(&mqtt_client, mqttTopic, QOS0, OnMessageReceived);
+  printf(strcat("Subscribed to", mqttTopic));
   printf("\r\n\r\n");
 
   /* USER CODE END 2 */
@@ -258,7 +259,10 @@ int main(void)
 
 //	MQTTMessage msg={ QOS0, 0, 0, 1, "{\"device_developer_id\":\"iot_1_device@sooyewguan\",\"data\":{\"humidity\":\"10\"}}",74};
 
-	MQTTPublish(&mqtt_client, "NydfA9CZzi6DHLWnao07Dv90dVlLvXbI/v2/streams", &msg);
+	char mqttTopic[255];
+	sprintf(mqttTopic, "%s/v2/streams", favoriotUsername);
+
+	MQTTPublish(&mqtt_client, mqttTopic, &msg);
 	HAL_Delay(5000);
 
   }
